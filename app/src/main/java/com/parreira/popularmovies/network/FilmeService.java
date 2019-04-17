@@ -7,6 +7,8 @@ import java.util.List;
 
 import retrofit2.http.GET;
 import retrofit2.Call;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by João Parreira on 4/12/2019.
@@ -26,6 +28,17 @@ public interface FilmeService {
     public static final String API_KEY = "3b86f8b7e600322952e3078f122d4002";
 
 
-    @GET ("popular?api_key=" + API_KEY)
-    Call<Api> getFilmes();
+    @GET ("popular?api_key=" + API_KEY )
+    Call<Api> getFilmesByPopular(@Query("page") int page);
+
+    @GET ("top_rated?api_key=" + API_KEY)
+    Call<Api> getFilmesByRating(@Query("page") int page);
+
+    @GET ("{id}/videos?api_key=" + API_KEY)
+    Call<TrailerAPI> getTrailer(@Path("id") int id);
+
+    @GET ("{id}/reviews?api_key=" + API_KEY)
+    Call<ReviewAPI> getReview(@Path("id") int id);
+
+
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item android:title="favourite"
+        android:id="@+id/menu_item_favourite2"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/star_full"
+        android:visible="false"
+        />
+    <item android:title="not_favourite"
+        android:id="@+id/menu_item_not_favourite2"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/star_empty"
+        android:visible="true"
+        />
+</menu>

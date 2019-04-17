@@ -1,5 +1,13 @@
 package com.parreira.popularmovies.activity;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
+import android.os.Build;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -8,15 +16,22 @@ import android.util.Log;
 import android.view.Menu;
 
 import android.view.MenuItem;
+import android.view.OrientationEventListener;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.parreira.popularmovies.R;
+import com.parreira.popularmovies.adapter.EndlessRecyclerViewOnScrollListener;
 import com.parreira.popularmovies.adapter.MyMoviesAdapter;
+import com.parreira.popularmovies.database.FilmeDatabase;
 import com.parreira.popularmovies.network.FilmeService;
 import com.parreira.popularmovies.network.RetrofitClientInstance;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -25,7 +40,18 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    OrientationEventListener mOrientationListener;
     private MyMoviesAdapter mAdapter;
+    List<Filme> myFilmesPopular = new ArrayList<>();
+    List<Filme> myFilmesRating = new ArrayList<>();
+    List<Filme> myFilmesFavorite = new ArrayList<>();
+    private ProgressBar progressBar;
+    private RecyclerView recyclerView;
+    private int mLoadedItems = 0;
+    public boolean isFavouritesOn = false;
+    boolean isPopularOn = false;
+    boolean isRatedOn = false;
+    boolean temp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,42 +59,129 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        List<Filme> myFilmes = new ArrayList<>();
-        criaArrayFilmes(myFilmes);
+        progressBar = (ProgressBar) findViewById(R.id.pb_progressbar);
+        progressBar.setVisibility(View.VISIBLE);
 
+        GridLayoutManager layoutManager;
 
-        //startMovieGrid(myFilmes);
+        recyclerView = (RecyclerView) findViewById(R.id.rv_movies_images);
+
+        layoutManager = new GridLayoutManager(MainActivity.this, 3);
+        recyclerView.setLayoutManager(layoutManager);
+        mAdapter = new MyMoviesAdapter(this);
+
+        if (savedInstanceState != null) {
+
+            if (temp = savedInstanceState.getBoolean("favourite") == true) {
+                myFilmesFavorite.clear();
+                criaArrayFilmesByFavourites(myFilmesFavorite);
+            }
+
+            if (temp = savedInstanceState.getBoolean("popular") == true) {
+                myFilmesPopular.clear();
+                criaArrayFilmesByPopular(myFilmesPopular, 1);
+                recyclerView.addOnScrollListener(new EndlessRecyclerViewOnScrollListener() {
+                    @Override
+                    public void onLoadMore() {
+                        criaArrayFilmesByPopular(myFilmesPopular, myFilmesPopular.size() / 10);
+
+                    }
+                });
+            }
+
+            if (temp = savedInstanceState.getBoolean("rated") == true) {
+                myFilmesRating.clear();
+                criaArrayFilmesByRating(myFilmesRating, 1);
+                recyclerView.addOnScrollListener(new EndlessRecyclerViewOnScrollListener() {
+                    @Override
+                    public void onLoadMore() {
+                        criaArrayFilmesByRating(myFilmesRating, myFilmesRating.size() / 10);
+
+                    }
+                });
+            }
+        } else {
+            criaArrayFilmesByPopular(myFilmesPopular, 1);
+
+            recyclerView.addOnScrollListener(new EndlessRecyclerViewOnScrollListener() {
+                @Override
+                public void onLoadMore() {
+                    criaArrayFilmesByPopular(myFilmesPopular, myFilmesPopular.size() / 10);
+
+                }
+            });
+        }
+
     }
 
 
     private void startMovieGrid(List<Filme> filmes) {
 
+        if (mAdapter.getItemCount() == 0) {
+            mAdapter.setItens(filmes);
+            recyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.setItens(filmes);
+            mAdapter.notifyDataSetChanged();
+        }
 
-        GridLayoutManager layoutManager;
-
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_movies_images);
-        //recyclerView.setHasFixedSize(true);
-
-        layoutManager = new GridLayoutManager(MainActivity.this, 3);
-        recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new MyMoviesAdapter(this, filmes);
-        recyclerView.setAdapter(mAdapter);
+        progressBar.setVisibility(View.GONE);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
             case R.id.menu_item_rating:
-                Toast toast = Toast.makeText(this, "Sort by rating", Toast.LENGTH_SHORT);
-                toast.show();
+                myFilmesRating.clear();
+                isFavouritesOn = false;
+                mAdapter.setFavourite(isFavouritesOn);
+                recyclerView.clearOnScrollListeners();
+                recyclerView.addOnScrollListener(new EndlessRecyclerViewOnScrollListener() {
+                    @Override
+                    public void onLoadMore() {
+                        criaArrayFilmesByRating(myFilmesRating, myFilmesRating.size() / 10);
+
+                    }
+                });
+                criaArrayFilmesByRating(myFilmesRating, 1);
+
+
                 break;
+            case R.id.menu_item_favourite:
+                myFilmesFavorite.clear();
+                isFavouritesOn = true;
+                mAdapter.setFavourite(isFavouritesOn);
+                recyclerView.clearOnScrollListeners();
+                criaArrayFilmesByFavourites(myFilmesFavorite);
+
+                break;
+
             case R.id.menu_item_popularity:
-                Toast toast2 = Toast.makeText(this, "Sort by popularity", Toast.LENGTH_SHORT);
-                toast2.show();
+                myFilmesPopular.clear();
+                isFavouritesOn = false;
+                mAdapter.setFavourite(isFavouritesOn);
+                recyclerView.clearOnScrollListeners();
+                recyclerView.addOnScrollListener(new EndlessRecyclerViewOnScrollListener() {
+                    @Override
+                    public void onLoadMore() {
+                        criaArrayFilmesByPopular(myFilmesPopular, myFilmesPopular.size() / 10);
+                    }
+                });
+                criaArrayFilmesByPopular(myFilmesPopular, 1);
         }
         return super.onOptionsItemSelected(item);
 
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (isFavouritesOn == true) {
+            myFilmesFavorite.clear();
+            criaArrayFilmesByFavourites(myFilmesFavorite);
+        }
     }
 
     @Override
@@ -79,16 +192,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // cria ListArray de 8 filmes
-    void criaArrayFilmes(final List<Filme> filmes) {
+    public void criaArrayFilmesByPopular(final List<Filme> filmes, int page) {
 
+        isFavouritesOn = false;
+        isPopularOn = true;
+        isRatedOn = false;
         FilmeService service = RetrofitClientInstance.getRetrofitInstance().create(FilmeService.class);
-        Call<Api> call = service.getFilmes();
+        Call<Api> call = service.getFilmesByPopular(page);
         call.enqueue(new Callback<Api>() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onResponse(Call<Api> call, Response<Api> response) {
                 filmes.addAll(response.body().getFilmeList());
                 Log.d("Callback", response.message());
-               // mAdapter.notifyDataSetChanged();
                 startMovieGrid(filmes);
             }
 
@@ -100,16 +216,60 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    void criaArrayFilmesByRating(final List<Filme> filmes, int page) {
+        isFavouritesOn = false;
+        isPopularOn = false;
+        isRatedOn = true;
 
-    // cria um filme aleatório
-    Filme criaFilme() {
-        Filme filme = new Filme();
-        filme.setTitle("Interstellar");
-        filme.setImage("https://image.tmdb.org/t/p/w342//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg");
-        filme.setReleaseDate("1999-10-12");
-        filme.setUserRating((float) 5);
-        filme.setSynopsis("\"A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy. Their concept catches on, with underground \\\"fight clubs\\\" forming in every town, until an eccentric gets in the way and ignites an out-of-control spiral toward oblivion.");
+        FilmeService service = RetrofitClientInstance.getRetrofitInstance().create(FilmeService.class);
+        Call<Api> call = service.getFilmesByRating(page);
+        call.enqueue(new Callback<Api>() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onResponse(Call<Api> call, Response<Api> response) {
+                filmes.addAll(response.body().getFilmeList());
+                Log.d("Callback", response.message());
+                startMovieGrid(filmes);
+            }
 
-        return filme;
+            @Override
+            public void onFailure(Call<Api> call, Throwable t) {
+                Log.d("Callback", "Failure");
+            }
+        });
+
+    }
+
+    private void criaArrayFilmesByFavourites(List<Filme> filmes) {
+        isFavouritesOn = true;
+        isPopularOn = false;
+        isRatedOn = false;
+
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
+        viewModel.getFilmes().observe(this, new Observer<List<Filme>>() {
+            @Override
+            public void onChanged(@Nullable List<Filme> filmes) {
+                startMovieGrid(filmes);
+            }
+        });
+
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+        outState.putBoolean("favourite", isFavouritesOn);
+        outState.putBoolean("popular", isPopularOn);
+        outState.putBoolean("rated", isRatedOn);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+
     }
 }

@@ -17,8 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignBottom="@id/img_movie2"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginLeft="@dimen/margin_content_layout"
+        android:layout_marginTop="@dimen/margin_content_layout"
         android:layout_toRightOf="@id/img_movie2"
         android:orientation="vertical">
 
@@ -26,46 +26,44 @@
             android:id="@+id/tv_title_label2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Title" />
+            style="@style/label_text"
+            android:layout_marginTop="0dp"
+            android:text="@string/label_title" />
 
         <TextView
             android:id="@+id/tv_title_name2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-
-            android:textSize="24dp" />
+            style="@style/content_text" />
 
         <TextView
             android:id="@+id/tv_user_rating_label2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="User Rating" />
+            style="@style/label_text"
+            android:text="@string/label_user_rating" />
 
-        <RatingBar
-            android:id="@+id/rating_bar"
+        <TextView
+            android:id="@+id/tv_user_rating2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/content_text"
+            />
 
-            android:numStars="5"
-            android:rating="3.5"
-            android:layout_marginTop="10dp" />
 
         <TextView
             android:id="@+id/tv_date_label2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Release date" />
+            style="@style/label_text"
+            android:text="@string/label_release_date" />
 
         <TextView
             android:id="@+id/tv_date2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-
-            android:textSize="24dp" />
+            style="@style/content_text"
+            />
 
 
     </LinearLayout>
@@ -74,17 +72,50 @@
         android:id="@+id/tv_synopsis_label2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="Plot Synopsis"
+        style="@style/label_text"
+        android:text="@string/label_plot_synopsis"
         android:gravity="center"
         android:layout_below="@id/img_movie2" />
+
     <TextView
         android:id="@+id/tv_synopsis2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-         android:gravity="center"
+        style="@style/plot_text"
+        android:justificationMode="inter_word"
         android:layout_below="@id/tv_synopsis_label2" />
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp">
+
+
+        <Button
+            android:layout_width="match_parent"
+            android:id="@+id/btn_trailer"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:textSize="18dp"
+            android:textColor="#FFFF"
+            android:layout_height="wrap_content"
+            android:text="@string/button_trailer"
+            android:background="@drawable/my_button"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:textSize="18dp"
+            android:id="@+id/btn_review"
+            android:textColor="#FFFF"
+            android:layout_marginLeft="10dp"
+            android:layout_height="wrap_content"
+            android:text="@string/button_review"
+            android:background="@drawable/my_button"/>
+
+
+    </LinearLayout>
 
 </RelativeLayout>

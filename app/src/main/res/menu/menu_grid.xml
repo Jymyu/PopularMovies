@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <item android:title="Rating"
-        android:id="@+id/menu_item_rating"
-        app:showAsAction="ifRoom"/>
-    <item android:title="Popularity"
-        android:id="@+id/menu_item_popularity"
-        app:showAsAction="ifRoom"/>
+    <item android:title="Sort by"
+        app:showAsAction="ifRoom">
+
+        <menu>
+
+            <item
+                android:id="@+id/menu_item_rating"
+                android:title="Rating"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/menu_item_popularity"
+                android:title="Pop"
+                app:showAsAction="never" />
+
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/menu_item_favourite"
+        android:title="Favourites"
+        app:showAsAction="ifRoom" />
 
 </menu>

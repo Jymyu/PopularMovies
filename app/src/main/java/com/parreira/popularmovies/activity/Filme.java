@@ -1,9 +1,15 @@
 package com.parreira.popularmovies.activity;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.PrimaryKey;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+
+import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 /**
  * Created by João Parreira on 4/11/2019.
@@ -19,13 +25,18 @@ import java.io.Serializable;
  * whether for profit or without charge.
  */
 
-
+@Entity()
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Filme implements Serializable {
+public class Filme implements Serializable , Comparable<Filme> {
+
 
     String title;
 
+    @PrimaryKey
+
     Integer id;
+
+    float popularity;
     @JsonProperty("poster_path")
     String image;
     @JsonProperty("overview")
@@ -35,16 +46,24 @@ public class Filme implements Serializable {
     @JsonProperty("release_date")
     String releaseDate;
 
+    @ForeignKey(entity = Review.class, parentColumns = "idReview",childColumns = "review", onDelete = CASCADE)
+    int review;
+    @ForeignKey(entity = Trailer.class, parentColumns = "idTrailer",childColumns = "trailer", onDelete = CASCADE)
+    int trailer;
+
     public Filme() {
     }
 
-    public Filme(String title, String image, String synopsis, float userRating, String releaseDate, Integer id) {
+    public Filme(String title, Integer id, float popularity, String image, String synopsis, float userRating, String releaseDate, int review, int trailer) {
         this.title = title;
+        this.id = id;
+        this.popularity = popularity;
         this.image = image;
         this.synopsis = synopsis;
         this.userRating = userRating;
         this.releaseDate = releaseDate;
-        this.id = id;
+        this.review = review;
+        this.trailer = trailer;
     }
 
     public Integer getId() {
@@ -70,7 +89,7 @@ public class Filme implements Serializable {
     public void setImage(String image) {
         String url = "https://image.tmdb.org/t/p/w185/";
 
-        this.image = url + image;
+        this.image = image;
     }
 
     public String getSynopsis() {
@@ -95,5 +114,34 @@ public class Filme implements Serializable {
 
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    public float getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(float popularity) {
+        this.popularity = popularity;
+    }
+
+    public int getReview() {
+        return review;
+    }
+
+    public void setReview(int review) {
+        this.review = review;
+    }
+
+    public int getTrailer() {
+        return trailer;
+    }
+
+    public void setTrailer(int trailer) {
+        this.trailer = trailer;
+    }
+
+    @Override
+    public int compareTo(Filme d) {
+        return 0;
     }
 }

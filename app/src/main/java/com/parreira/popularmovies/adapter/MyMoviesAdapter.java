@@ -13,11 +13,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.parreira.popularmovies.activity.Filme;
+import com.parreira.popularmovies.activity.MainActivity;
 import com.parreira.popularmovies.activity.MovieActivity;
 import com.parreira.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.parreira.popularmovies.activity.MovieActivity.KEY_IS_FAVOURITE;
 
 /**
  * Created by João Parreira on 4/11/2019.
@@ -37,11 +41,17 @@ public class MyMoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public static final String TAG = MyMoviesAdapter.class.getSimpleName();
     private static Context mContext;
     private List<Filme> mArray;
+    private static boolean mIsFavouriteOn;
 
-    public MyMoviesAdapter(Context context, List<Filme> array) {
+    public MyMoviesAdapter(Context context, List<Filme> array, boolean isFavouriteOn) {
         this.mContext = context;
         this.mArray = array;
+        this.mIsFavouriteOn = isFavouriteOn;
+    }
 
+    public MyMoviesAdapter(Context context) {
+        this.mContext = context;
+        this.mArray = new ArrayList<>();
     }
 
     @NonNull
@@ -65,7 +75,8 @@ public class MyMoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
 
         ImageView img = viewHolder.itemView.findViewById(R.id.img_movie);
-        Picasso.get().load(mArray.get(i).getImage()).into(img);
+        String url = "https://image.tmdb.org/t/p/w185/" + mArray.get(i).getImage();
+        Picasso.get().load(url).into(img);
 
         viewHolder.itemView.setTag(mArray.get(i));
 
@@ -74,7 +85,6 @@ public class MyMoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-
         return mArray.size();
     }
 
@@ -98,11 +108,20 @@ public class MyMoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                     Intent intent = new Intent(MyMoviesAdapter.mContext, MovieActivity.class);
                     intent.putExtra(MovieActivity.KEY_FILME, filme);
+                    intent.putExtra(KEY_IS_FAVOURITE, mIsFavouriteOn);
                     MyMoviesAdapter.mContext.startActivity(intent);
                 }
             });
 
         }
 
+    }
+
+    public void setFavourite(boolean favourite) {
+        mIsFavouriteOn = favourite;
+    }
+    public void setItens(List<Filme> itens) {
+        mArray.clear();
+        mArray.addAll(itens);
     }
 }

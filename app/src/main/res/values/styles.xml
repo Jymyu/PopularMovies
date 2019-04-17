@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -7,5 +7,29 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+    <style name="plot_text">
+        <item name="android:textSize">@dimen/plot_size</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginLeft">@dimen/plot_margin_horizontal</item>
+        <item name="android:layout_marginRight">@dimen/plot_margin_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/plot_margin_top</item>
+    </style>
+
+    <style name="label_text">
+        <item name="android:textSize">@dimen/label_size</item>
+
+        <item name="android:layout_marginLeft">@dimen/label_margin_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/label_margin_top</item>
+    </style>
+
+    <style name="content_text">
+        <item name="android:textSize">@dimen/content_size</item>
+        <item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-black</item>
+        <item name="android:layout_marginLeft">@dimen/content_margin_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/content_margin_top</item>
+    </style>
+
+
 
 </resources>
