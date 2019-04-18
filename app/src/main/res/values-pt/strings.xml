@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Filmes Populares</string>
+    <string name="label_title">Título</string>
+    <string name="label_user_rating">Classificação</string>
+    <string name="label_release_date">Data estreia</string>
+    <string name="label_plot_synopsis">Sinopse</string>
+    <string name="button_trailer">Vídeo</string>
+    <string name="button_review">Comentários</string>
+    <string name="favourites_menu">Favoritos</string>
+    <string name="no_internet_connection">Sem ligação à internet ...</string>
+    <string name="try_again">Tenta novamente</string>
+    <string name="reviews">Comentários</string>
+    <string name="reviews_author">Autor:  </string>
+    <string name="sort_by_menu">ordenar por</string>
+    <string name="rating_menu">Classificação</string>
+    <string name="pop_menu">popularidade</string>
+    <string name="star_menu_fav">Favoritos</string>
+    <string name="star_menu_not_fab">Não Favoritos</string>
+</resources>

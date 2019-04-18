@@ -6,4 +6,14 @@
     <string name="label_plot_synopsis">Plot Synopsis</string>
     <string name="button_trailer">Trailer</string>
     <string name="button_review">Review</string>
+    <string name="favourites_menu">Favourites</string>
+    <string name="no_internet_connection">No internet connection ...</string>
+    <string name="try_again">Try Again</string>
+    <string name="reviews">Reviews</string>
+    <string name="reviews_author">Author:  </string>
+    <string name="sort_by_menu">Sort by</string>
+    <string name="rating_menu">Rating</string>
+    <string name="pop_menu">Pop</string>
+    <string name="star_menu_fav">Favourite</string>
+    <string name="star_menu_not_fab">Not Favourite</string>
 </resources>

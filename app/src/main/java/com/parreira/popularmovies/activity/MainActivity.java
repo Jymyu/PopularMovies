@@ -5,6 +5,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -18,7 +19,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.OrientationEventListener;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -51,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean isFavouritesOn = false;
     boolean isPopularOn = false;
     boolean isRatedOn = false;
+    private TextView tvNoInternet;
+    private Button btnNoConnection;
     boolean temp;
 
     @Override
@@ -61,7 +66,9 @@ public class MainActivity extends AppCompatActivity {
 
         progressBar = (ProgressBar) findViewById(R.id.pb_progressbar);
         progressBar.setVisibility(View.VISIBLE);
-
+        tvNoInternet = (TextView) findViewById(R.id.tv_no_internet);
+        tvNoInternet.setVisibility(View.INVISIBLE);
+        btnNoConnection = (Button) findViewById(R.id.btn_tenta_novamente);
         GridLayoutManager layoutManager;
 
         recyclerView = (RecyclerView) findViewById(R.id.rv_movies_images);
@@ -112,6 +119,34 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        btnNoConnection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);
+                btnNoConnection.setVisibility(View.GONE);
+                tvNoInternet.setVisibility(View.GONE);
+                new CountDownTimer(3000,1000) {
+                    public void onFinish() {
+
+                        criaArrayFilmesByPopular(myFilmesPopular, 1);
+
+                        recyclerView.addOnScrollListener(new EndlessRecyclerViewOnScrollListener() {
+                            @Override
+                            public void onLoadMore() {
+                                criaArrayFilmesByPopular(myFilmesPopular, myFilmesPopular.size() / 10);
+
+                            }
+                        });
+                    }
+
+                    public void onTick(long millisUntilFinished) {
+                        // millisUntilFinished    The amount of time until finished.
+                    }
+                }.start();
+
+
+            }
+        });
     }
 
 
@@ -126,6 +161,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         progressBar.setVisibility(View.GONE);
+        tvNoInternet.setVisibility(View.GONE);
+        btnNoConnection.setVisibility(View.GONE);
     }
 
 
@@ -210,6 +247,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Api> call, Throwable t) {
+
+                progressBar.setVisibility(View.GONE);
+                btnNoConnection.setVisibility(View.VISIBLE);
+                tvNoInternet.setVisibility(View.VISIBLE);
+
+
                 Log.d("Callback", "Failure");
             }
         });

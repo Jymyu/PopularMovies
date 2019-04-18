@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Reviews"
+        android:text="@string/reviews"
         style="@style/content_text"
         android:gravity="center"
         android:padding="20dp"
