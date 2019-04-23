@@ -119,7 +119,9 @@ public class MyMoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void setFavourite(boolean favourite) {
         mIsFavouriteOn = favourite;
+
     }
+
     public void setItens(List<Filme> itens) {
         mArray.clear();
         mArray.addAll(itens);

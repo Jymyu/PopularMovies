@@ -43,7 +43,7 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    OrientationEventListener mOrientationListener;
+
     private MyMoviesAdapter mAdapter;
     List<Filme> myFilmesPopular = new ArrayList<>();
     List<Filme> myFilmesRating = new ArrayList<>();
