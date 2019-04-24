@@ -32,8 +32,6 @@ public interface DaoFilme {
     @Insert
     void insertFilme(Filme filme);
 
-    @Insert
-    void insertAll(List<Filme> listaFilme);
 
     @Query("SELECT * FROM Filme WHERE id = :idFilme")
     Filme getFilmeById(int idFilme);
@@ -42,14 +40,9 @@ public interface DaoFilme {
     @Query("SELECT * FROM Filme")
     LiveData<List<Filme>> getFilmeAll();
 
-    @Update
-    void updateFilme(Filme filme);
+
 
     @Delete
     void deleteFilme(Filme filme);
-
-
-    @Query("SELECT * FROM Filme F JOIN Review R JOIN Trailer T  ON (F.review = R.idReview) WHERE F.id = :FilmeID")
-    Filme getFilmeReview(int FilmeID);
 
 }

@@ -1,11 +1,13 @@
-package com.parreira.popularmovies.activity;
+package com.parreira.popularmovies.viewModel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
+import com.parreira.popularmovies.activity.Filme;
 import com.parreira.popularmovies.database.FilmeDatabase;
+import com.parreira.popularmovies.repository.RepositoryFilmes;
 
 import java.util.List;
 
@@ -25,18 +27,36 @@ import java.util.List;
 public class MainViewModel extends AndroidViewModel {
 
     private LiveData<List<Filme>> filmes;
+    private RepositoryFilmes repository;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-        FilmeDatabase database = FilmeDatabase.getAppDatabase(this.getApplication());
-        filmes = database.daoFilme().getFilmeAll();
+        repository = new RepositoryFilmes(application);
+        filmes = repository.getmFilmesFavoritos();
     }
+
+
+    public void insertFavorito(Filme filme){
+        repository.insert(filme);
+
+    }
+
+    public void deleteFavorito (Filme filme){
+        repository.delete(filme);
+    }
+
+
+    public Filme getFilmeById (int filmeId){
+       return repository.getFilmeById(filmeId);
+    }
+
+
+
+
 
     public LiveData<List<Filme>> getFilmes() {
         return filmes;
     }
 
-    public void setFilmes(LiveData<List<Filme>> filmes) {
-        this.filmes = filmes;
-    }
+
 }
