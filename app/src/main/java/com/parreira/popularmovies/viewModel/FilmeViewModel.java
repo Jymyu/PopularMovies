@@ -41,22 +41,15 @@ public class FilmeViewModel extends AndroidViewModel {
     }
 
 
-    public void getMorePopularMovies(){
-repository.adicionaFilmesPopular();
+    public void getMorePopularMovies() {
+        repository.adicionaFilmesPopular();
         return;
     }
 
 
-
-
-
-    public  LiveData<List<Filme>> getFilmes() {
+    public LiveData<List<Filme>> getFilmes() {
         return filmes;
     }
-
-
-
-
 
 
 }

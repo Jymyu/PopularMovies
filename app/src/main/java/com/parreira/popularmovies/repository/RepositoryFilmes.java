@@ -49,13 +49,14 @@ public class RepositoryFilmes {
         FilmeDatabase database = FilmeDatabase.getAppDatabase(application);
         mDaoFilme = database.daoFilme();
         mFilmesFavoritos = mDaoFilme.getFilmeAll();
-        mFilmes = adicionaFilmesPopular();
-    }
-
-    public LiveData<List<Filme>> adicionaFilmesPopular() {
         mFilmes = getFilmesByPopular(mCurrentPage);
         mCurrentPage = mCurrentPage + 1;
-        return mFilmes;
+    }
+
+    public void adicionaFilmesPopular() {
+        mFilmes = getFilmesByPopular(mCurrentPage);
+        mCurrentPage = mCurrentPage + 1;
+        ;
     }
 
     public void insert(Filme filme) {
@@ -94,11 +95,10 @@ public class RepositoryFilmes {
         FilmeService service = RetrofitClientInstance.getRetrofitInstance().create(FilmeService.class);
         Call<Api> call = service.getFilmesByPopular(page);
         call.enqueue(new Callback<Api>() {
+
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onResponse(Call<Api> call, Response<Api> response) {
-
-
 
 
                 filmes.addAll(response.body().getFilmeList());

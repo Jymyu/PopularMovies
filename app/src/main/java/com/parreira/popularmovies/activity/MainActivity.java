@@ -71,7 +71,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         criaArrayFilmesByPopular();
+        recyclerView.clearOnScrollListeners();
+        recyclerView.addOnScrollListener(new EndlessRecyclerViewOnScrollListener() {
+            @Override
+            public void onLoadMore() {
+              viewModelPopular.getMorePopularMovies();
 
+
+            }
+        });
 
 
 
@@ -144,16 +152,17 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.menu_item_popularity:
-
+                criaArrayFilmesByPopular();
                 recyclerView.clearOnScrollListeners();
                 recyclerView.addOnScrollListener(new EndlessRecyclerViewOnScrollListener() {
                     @Override
                     public void onLoadMore() {
                         viewModelPopular.getMorePopularMovies();
 
+
                     }
                 });
-                criaArrayFilmesByPopular();
+
         }
         return super.onOptionsItemSelected(item);
 
@@ -175,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable List<Filme> filmes) {
                 startMovieGrid(filmes);
-
             }
         });
 
@@ -240,5 +248,11 @@ public class MainActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
 
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("onDestroy", "onDestroy");
     }
 }
