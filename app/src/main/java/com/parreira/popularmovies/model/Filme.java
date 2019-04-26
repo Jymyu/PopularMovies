@@ -1,4 +1,4 @@
-package com.parreira.popularmovies.activity;
+package com.parreira.popularmovies.model;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;

@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.parreira.popularmovies.R;
-import com.parreira.popularmovies.activity.Review;
+import com.parreira.popularmovies.model.Review;
 
 import java.util.List;
 

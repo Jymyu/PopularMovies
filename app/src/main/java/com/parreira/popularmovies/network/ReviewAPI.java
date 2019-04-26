@@ -1,7 +1,7 @@
 package com.parreira.popularmovies.network;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.parreira.popularmovies.activity.Review;
+import com.parreira.popularmovies.model.Review;
 
 import java.io.Serializable;
 import java.util.List;

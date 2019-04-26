@@ -5,10 +5,8 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Update;
 
-import com.parreira.popularmovies.activity.Filme;
-import com.parreira.popularmovies.activity.Review;
+import com.parreira.popularmovies.model.Filme;
 
 import java.util.List;
 

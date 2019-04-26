@@ -15,8 +15,11 @@ package com.parreira.popularmovies.adapter;
  */
 
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
+import com.parreira.popularmovies.activity.MainActivity;
 
 public abstract class EndlessRecyclerViewOnScrollListener extends RecyclerView.OnScrollListener {
 //    public static String TAG = EndlessRecyclerOnScrollListener.class.getSimpleName();
@@ -24,6 +27,7 @@ public abstract class EndlessRecyclerViewOnScrollListener extends RecyclerView.O
     /**
      * The total number of items in the dataset after the last load
      */
+
     private int mPreviousTotal = 0;
     /**
      * True if we are still waiting for the last set of data to load.
@@ -39,7 +43,7 @@ public abstract class EndlessRecyclerViewOnScrollListener extends RecyclerView.O
         int firstVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
 
         if (mLoading) {
-            if (totalItemCount > mPreviousTotal) {
+            if (totalItemCount >= mPreviousTotal) {
                 mLoading = false;
                 mPreviousTotal = totalItemCount;
             }

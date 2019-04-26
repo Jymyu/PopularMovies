@@ -7,14 +7,17 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
-import android.view.View;
 
-import com.parreira.popularmovies.activity.Api;
-import com.parreira.popularmovies.activity.Filme;
+import com.parreira.popularmovies.model.Api;
+import com.parreira.popularmovies.model.Filme;
+import com.parreira.popularmovies.model.Review;
+import com.parreira.popularmovies.model.Trailer;
 import com.parreira.popularmovies.database.DaoFilme;
 import com.parreira.popularmovies.database.FilmeDatabase;
 import com.parreira.popularmovies.network.FilmeService;
 import com.parreira.popularmovies.network.RetrofitClientInstance;
+import com.parreira.popularmovies.network.ReviewAPI;
+import com.parreira.popularmovies.network.TrailerAPI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,25 +42,46 @@ import retrofit2.Response;
  */
 public class RepositoryFilmes {
 
+    Boolean isLoading;
     private DaoFilme mDaoFilme;
     private LiveData<List<Filme>> mFilmesFavoritos;
-    private LiveData<List<Filme>> mFilmes;
-    final List<Filme> filmes = new ArrayList<>();
-    private int mCurrentPage = 1;
+    private LiveData<List<Filme>> mFilmesPopular;
+    private LiveData<List<Filme>> mFilmesRating;
+    final List<Filme> filmesPopular = new ArrayList<>();
+    final List<Filme> filmesRating = new ArrayList<>();
+    private int mCurrentPagePop = 1;
+    private int mCurrentPageRat = 1;
+
+
+    public RepositoryFilmes() {
+
+    }
+
 
     public RepositoryFilmes(Application application) {
         FilmeDatabase database = FilmeDatabase.getAppDatabase(application);
         mDaoFilme = database.daoFilme();
         mFilmesFavoritos = mDaoFilme.getFilmeAll();
-        mFilmes = getFilmesByPopular(mCurrentPage);
-        mCurrentPage = mCurrentPage + 1;
+        mFilmesPopular = getFilmesByPopular(mCurrentPagePop);
+        mFilmesRating = getFilmesByRating(mCurrentPageRat);
+        mCurrentPagePop = mCurrentPagePop + 1;
+        mCurrentPageRat = mCurrentPageRat + 1;
+        isLoading = false;
     }
 
+    //add one more page of movies by popularity
     public void adicionaFilmesPopular() {
-        mFilmes = getFilmesByPopular(mCurrentPage);
-        mCurrentPage = mCurrentPage + 1;
-        ;
+        mFilmesPopular = getFilmesByPopular(mCurrentPagePop);
+        mCurrentPagePop = mCurrentPagePop + 1;
     }
+
+    //add one more page of movies by rating
+    public void adicionaFilmesRating() {
+        mFilmesRating = getFilmesByRating(mCurrentPageRat);
+        mCurrentPageRat = mCurrentPageRat + 1;
+
+    }
+
 
     public void insert(Filme filme) {
         new InsertFilmeAsyncTask(mDaoFilme).execute(filme);
@@ -66,6 +90,7 @@ public class RepositoryFilmes {
     public void delete(Filme filme) {
         new DeleteFilmeAsyncTask(mDaoFilme).execute(filme);
     }
+
 
     public Filme getFilmeById(int filmeId) {
         Filme filme = null;
@@ -79,8 +104,8 @@ public class RepositoryFilmes {
         return filme;
     }
 
-    public LiveData<List<Filme>> getmFilmes() {
-        return mFilmes;
+    public LiveData<List<Filme>> getmFilmesPopular() {
+        return mFilmesPopular;
     }
 
     public LiveData<List<Filme>> getmFilmesFavoritos() {
@@ -91,6 +116,7 @@ public class RepositoryFilmes {
     public LiveData<List<Filme>> getFilmesByPopular(int page) {
 
         MutableLiveData<List<Filme>> filmesLiveData = new MutableLiveData<>();
+        isLoading = true;
 
         FilmeService service = RetrofitClientInstance.getRetrofitInstance().create(FilmeService.class);
         Call<Api> call = service.getFilmesByPopular(page);
@@ -101,22 +127,89 @@ public class RepositoryFilmes {
             public void onResponse(Call<Api> call, Response<Api> response) {
 
 
-                filmes.addAll(response.body().getFilmeList());
-                filmesLiveData.setValue(filmes);
+                filmesPopular.addAll(response.body().getFilmeList());
+                filmesLiveData.setValue(filmesPopular);
+                isLoading = false;
 
                 Log.d("Callback", response.message());
-
-
             }
 
             @Override
             public void onFailure(Call<Api> call, Throwable t) {
-
-
                 Log.d("Callback", "Failure");
             }
         });
         return filmesLiveData;
+    }
+
+    public LiveData<List<Filme>> getFilmesByRating(int page) {
+
+        MutableLiveData<List<Filme>> filmesLiveData = new MutableLiveData<>();
+
+        FilmeService service = RetrofitClientInstance.getRetrofitInstance().create(FilmeService.class);
+        Call<Api> call = service.getFilmesByRating(page);
+        call.enqueue(new Callback<Api>() {
+
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onResponse(Call<Api> call, Response<Api> response) {
+
+
+                filmesRating.addAll(response.body().getFilmeList());
+                filmesLiveData.setValue(filmesRating);
+                isLoading = false;
+
+                Log.d("Callback", response.message());
+            }
+
+            @Override
+            public void onFailure(Call<Api> call, Throwable t) {
+                Log.d("Callback", "Failure");
+            }
+        });
+        return filmesLiveData;
+    }
+
+    public List<Review> getReviewList(int filmeId) {
+
+        List<Review> reviews = new ArrayList<>();
+
+        FilmeService serviceReview = RetrofitClientInstance.getRetrofitInstance().create(FilmeService.class);
+        Call<ReviewAPI> callReview = serviceReview.getReview(filmeId);
+        callReview.enqueue(new Callback<ReviewAPI>() {
+
+            @Override
+            public void onResponse(Call<ReviewAPI> call, Response<ReviewAPI> response) {
+                reviews.addAll(response.body().getReviewList());
+            }
+
+            @Override
+            public void onFailure(Call<ReviewAPI> call, Throwable t) {
+
+            }
+        });
+        return reviews;
+    }
+
+    public List<Trailer> getTrailerList(int filmeId) {
+
+        List<Trailer> trailerList = new ArrayList<>();
+
+        FilmeService serviceTrailer = RetrofitClientInstance.getRetrofitInstance().create(FilmeService.class);
+        Call<TrailerAPI> callTrailer = serviceTrailer.getTrailer(filmeId);
+        callTrailer.enqueue(new Callback<TrailerAPI>() {
+            @Override
+            public void onResponse(Call<TrailerAPI> call, Response<TrailerAPI> response) {
+                trailerList.addAll(response.body().getListaTrailers());
+            }
+
+            @Override
+            public void onFailure(Call<TrailerAPI> call, Throwable t) {
+
+            }
+        });
+        return trailerList;
+
     }
 
     private static class InsertFilmeAsyncTask extends AsyncTask<Filme, Void, Void> {
@@ -170,5 +263,11 @@ public class RepositoryFilmes {
         return RetrofitClientInstance.getRetrofitInstance().create(FilmeService.class);
     }
 
+    public LiveData<List<Filme>> getmFilmesRating() {
+        return mFilmesRating;
+    }
 
+    public Boolean getLoading() {
+        return isLoading;
+    }
 }

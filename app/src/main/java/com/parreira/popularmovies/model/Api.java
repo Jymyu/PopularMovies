@@ -1,4 +1,4 @@
-package com.parreira.popularmovies.activity;
+package com.parreira.popularmovies.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;

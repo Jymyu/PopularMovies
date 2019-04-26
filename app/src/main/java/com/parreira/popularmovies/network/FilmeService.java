@@ -1,9 +1,6 @@
 package com.parreira.popularmovies.network;
 
-import com.parreira.popularmovies.activity.Api;
-import com.parreira.popularmovies.activity.Filme;
-
-import java.util.List;
+import com.parreira.popularmovies.model.Api;
 
 import retrofit2.http.GET;
 import retrofit2.Call;

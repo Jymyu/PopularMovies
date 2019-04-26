@@ -1,20 +1,13 @@
 package com.parreira.popularmovies.database;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.db.SupportSQLiteOpenHelper;
 import android.arch.persistence.room.Database;
-import android.arch.persistence.room.DatabaseConfiguration;
-import android.arch.persistence.room.InvalidationTracker;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
-import android.support.annotation.NonNull;
 
-import com.parreira.popularmovies.activity.Filme;
-import com.parreira.popularmovies.activity.Review;
-import com.parreira.popularmovies.activity.Trailer;
-
-import java.util.concurrent.Executors;
+import com.parreira.popularmovies.model.Filme;
+import com.parreira.popularmovies.model.Review;
+import com.parreira.popularmovies.model.Trailer;
 
 /**
  * Created by João Parreira on 4/16/2019.
@@ -30,22 +23,21 @@ import java.util.concurrent.Executors;
  * whether for profit or without charge.
  */
 
-@Database(entities = {Filme.class, Review.class, Trailer.class }, version = 1, exportSchema = true)
+@Database(entities = {Filme.class, Review.class, Trailer.class}, version = 1, exportSchema = true)
 public abstract class FilmeDatabase extends RoomDatabase {
 
     private static FilmeDatabase INSTANCE;
+
     public abstract DaoFilme daoFilme();
-    public abstract DaoReview daoReview();
-    public abstract DaoTrailer daoTrailer();
 
-    public static FilmeDatabase getAppDatabase(final Context context){
+    public static FilmeDatabase getAppDatabase(final Context context) {
 
-        if(INSTANCE == null) {
-            INSTANCE = Room.databaseBuilder(context.getApplicationContext(),FilmeDatabase.class,"Filme Database")
+        if (INSTANCE == null) {
+            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), FilmeDatabase.class, "Filme Database")
                     .allowMainThreadQueries().build();
-                    }
+        }
 
-          return INSTANCE;
+        return INSTANCE;
     }
 
     public static void destroyInstance() {
