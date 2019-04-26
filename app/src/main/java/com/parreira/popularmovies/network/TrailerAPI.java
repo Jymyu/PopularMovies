@@ -1,8 +1,7 @@
 package com.parreira.popularmovies.network;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.parreira.popularmovies.activity.Filme;
-import com.parreira.popularmovies.activity.Trailer;
+import com.parreira.popularmovies.model.Trailer;
 
 import java.io.Serializable;
 import java.util.List;

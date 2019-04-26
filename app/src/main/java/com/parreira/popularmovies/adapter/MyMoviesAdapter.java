@@ -12,8 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.parreira.popularmovies.activity.Filme;
-import com.parreira.popularmovies.activity.MainActivity;
+import com.parreira.popularmovies.model.Filme;
 import com.parreira.popularmovies.activity.MovieActivity;
 import com.parreira.popularmovies.R;
 import com.squareup.picasso.Picasso;
@@ -119,7 +118,13 @@ public class MyMoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void setFavourite(boolean favourite) {
         mIsFavouriteOn = favourite;
+
     }
+
+    public void deleteItems(){
+        mArray.clear();
+    }
+
     public void setItens(List<Filme> itens) {
         mArray.clear();
         mArray.addAll(itens);

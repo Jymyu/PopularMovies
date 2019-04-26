@@ -5,10 +5,8 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Update;
 
-import com.parreira.popularmovies.activity.Filme;
-import com.parreira.popularmovies.activity.Review;
+import com.parreira.popularmovies.model.Filme;
 
 import java.util.List;
 
@@ -32,8 +30,6 @@ public interface DaoFilme {
     @Insert
     void insertFilme(Filme filme);
 
-    @Insert
-    void insertAll(List<Filme> listaFilme);
 
     @Query("SELECT * FROM Filme WHERE id = :idFilme")
     Filme getFilmeById(int idFilme);
@@ -42,14 +38,9 @@ public interface DaoFilme {
     @Query("SELECT * FROM Filme")
     LiveData<List<Filme>> getFilmeAll();
 
-    @Update
-    void updateFilme(Filme filme);
+
 
     @Delete
     void deleteFilme(Filme filme);
-
-
-    @Query("SELECT * FROM Filme F JOIN Review R JOIN Trailer T  ON (F.review = R.idReview) WHERE F.id = :FilmeID")
-    Filme getFilmeReview(int FilmeID);
 
 }

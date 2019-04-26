@@ -1,5 +1,6 @@
 package com.parreira.popularmovies.activity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -20,20 +21,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parreira.popularmovies.R;
-import com.parreira.popularmovies.database.FilmeDatabase;
-import com.parreira.popularmovies.network.FilmeService;
-import com.parreira.popularmovies.network.RetrofitClientInstance;
-import com.parreira.popularmovies.network.ReviewAPI;
-import com.parreira.popularmovies.network.TrailerAPI;
+import com.parreira.popularmovies.model.Filme;
+import com.parreira.popularmovies.model.Review;
+import com.parreira.popularmovies.model.Trailer;
+import com.parreira.popularmovies.repository.RepositoryFilmes;
+import com.parreira.popularmovies.viewModel.FilmeFavoritoViewModel;
 import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static com.parreira.popularmovies.activity.ReviewActivity.KEY_LIST_REVIEW;
 
@@ -60,6 +57,8 @@ public class MovieActivity extends AppCompatActivity {
     List<Review> reviewList = new ArrayList<Review>();
     List<Trailer> trailerList = new ArrayList<Trailer>();
 
+    RepositoryFilmes repository = new RepositoryFilmes();
+
     MenuItem mDynamicMenuItemFavourite;
     MenuItem mDynamicMenuItemNotFavourite;
 
@@ -69,7 +68,7 @@ public class MovieActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
         setContentView(R.layout.activity_movie);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        FilmeFavoritoViewModel viewModelFavourites = ViewModelProviders.of(this).get(FilmeFavoritoViewModel.class);
         filme = (Filme) getIntent().getExtras().get(KEY_FILME);
         isFavouriteOn = (boolean) getIntent().getExtras().get(KEY_IS_FAVOURITE);
 
@@ -90,43 +89,11 @@ public class MovieActivity extends AppCompatActivity {
         Picasso.get().load(url).into(img);
 
 
-        // call review
+        // get reviews list
+        reviewList = repository.getReviewList(filme.getId());
 
-
-        FilmeService serviceReview = RetrofitClientInstance.getRetrofitInstance().create(FilmeService.class);
-        Call<ReviewAPI> callReview = serviceReview.getReview(filme.getId());
-        callReview.enqueue(new Callback<ReviewAPI>() {
-            @Override
-            public void onResponse(Call<ReviewAPI> call, Response<ReviewAPI> response) {
-
-                reviewList.addAll(response.body().getReviewList());
-
-            }
-
-            @Override
-            public void onFailure(Call<ReviewAPI> call, Throwable t) {
-
-                Toast.makeText(MovieActivity.this, "Failure comms", Toast.LENGTH_SHORT);
-
-            }
-        });
-
-
-        // call Trailer
-
-        FilmeService serviceTrailer = RetrofitClientInstance.getRetrofitInstance().create(FilmeService.class);
-        Call<TrailerAPI> callTrailer = serviceTrailer.getTrailer(filme.getId());
-        callTrailer.enqueue(new Callback<TrailerAPI>() {
-            @Override
-            public void onResponse(Call<TrailerAPI> call, Response<TrailerAPI> response) {
-                trailerList.addAll(response.body().getListaTrailers());
-            }
-
-            @Override
-            public void onFailure(Call<TrailerAPI> call, Throwable t) {
-                Toast.makeText(MovieActivity.this, "Failure comms", Toast.LENGTH_SHORT);
-            }
-        });
+        // get trailer list
+        trailerList = repository.getTrailerList(filme.getId());
 
         btnReview.setOnClickListener(new OnClickListener() {
             @Override
@@ -151,34 +118,30 @@ public class MovieActivity extends AppCompatActivity {
                 } else {
                     watchYoutubeVideo(MovieActivity.this, trailerList.get(0).getKey());
                 }
-
             }
         });
-
-
     }
 
+    // Favourite and not Favourite selection
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        FilmeFavoritoViewModel viewModelFavourites = ViewModelProviders.of(this).get(FilmeFavoritoViewModel.class);
 
         switch (item.getItemId()) {
 
             case R.id.menu_item_favourite2:
                 mDynamicMenuItemFavourite.setVisible(false);
                 mDynamicMenuItemNotFavourite.setVisible(true);
-                FilmeDatabase.getAppDatabase(this).daoFilme().deleteFilme(filme);
-                FilmeDatabase.getAppDatabase(this).daoReview().deleteReviewAll(reviewList);
-                FilmeDatabase.getAppDatabase(this).daoTrailer().deleteTrailerAll(trailerList);
+                viewModelFavourites.deleteFavorito(filme);
 
 
                 break;
             case R.id.menu_item_not_favourite2:
                 mDynamicMenuItemFavourite.setVisible(true);
                 mDynamicMenuItemNotFavourite.setVisible(false);
-                FilmeDatabase.getAppDatabase(this).daoFilme().insertFilme(filme);
-                FilmeDatabase.getAppDatabase(this).daoReview().insertAll(reviewList);
-                FilmeDatabase.getAppDatabase(this).daoTrailer().insertAll(trailerList);
+                viewModelFavourites.insertFavorito(filme);
+
                 break;
 
 
@@ -194,14 +157,15 @@ public class MovieActivity extends AppCompatActivity {
         finish();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        FilmeFavoritoViewModel viewModelFavourites = ViewModelProviders.of(this).get(FilmeFavoritoViewModel.class);
         getMenuInflater().inflate(R.menu.menu_movie, menu);
         mDynamicMenuItemFavourite = menu.findItem(R.id.menu_item_favourite2);
         mDynamicMenuItemNotFavourite = menu.findItem(R.id.menu_item_not_favourite2);
-        if (FilmeDatabase.getAppDatabase(this).daoFilme().getFilmeById(filme.getId()) != null) {
+
+        if (viewModelFavourites.getFilmeById(filme.getId()) != null) {
             mDynamicMenuItemFavourite.setVisible(true);
             mDynamicMenuItemNotFavourite.setVisible(false);
         }

@@ -5,10 +5,10 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.parreira.popularmovies.R;
 import com.parreira.popularmovies.adapter.ReviewAdapter;
+import com.parreira.popularmovies.model.Review;
 
 import java.util.List;
 
@@ -34,7 +34,6 @@ public class ReviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
         Bundle extras = getIntent().getExtras();
         List<Review> reviews = (List<Review>) extras.get(KEY_LIST_REVIEW);
